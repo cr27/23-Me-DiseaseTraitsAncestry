@@ -4,7 +4,7 @@ import json
 import pandas as pd
 import re
 
-def diseaseTrait_Ancestry(alphaNumeral):
+def diseaseTrait_Ancestry(snp_id):
 
     url = f'https://www.ebi.ac.uk/gwas/rest/api/singleNucleotidePolymorphisms/{snp_id}/studies'
 
@@ -25,7 +25,7 @@ def diseaseTrait_Ancestry(alphaNumeral):
 def creatediseaseTrait_Neuro_Brain_Behavior():
     # Open the text file for reading
     file_path = input("Go to https://github.com/cr27 and download my 23&Me .txt file."
-                      "\n Enter filepath to your downloaded 23&Me .txt file")
+                      "\nEnter filepath to your downloaded 23&Me .txt file")
     with open(file_path, 'r') as infile:
 
         with open('23ME.csv', 'w', newline='') as outfile:
@@ -47,15 +47,17 @@ def creatediseaseTrait_Neuro_Brain_Behavior():
     columns = "rsid|chromosome|position|genotype".split("|")
     df = pd.DataFrame(data=data, columns=columns)
     print(df.head())
-    df.to_csv("test.csv")
+    df.to_csv("reformatted_23ME.csv")
 
 
     print("Download gwas_Catalog from this url:" + "https://www.ebi.ac.uk/gwas/api/search/downloads/alternative")
-    gwas_data = pd.read_csv(r"C:\Users\jbrow\gwas_catalog_v1.0.2-associations_e109_r2023-02-15.tsv", sep='\t', error_bad_lines=False)
+    print("Make Sure you have the file path and it is correct");
+    gwas_data = pd.read_csv(r#insert GWAS .tsv file path here, sep='\t')
     gwas_data = gwas_data.rename(columns={'SNPS': 'rsid'})
 
     # Load 23andMe data
-    me_data = pd.read_csv(r"C:\Users\jbrow\reformatted.csv")
+    print("Make Sure you have the file path and it is correct");
+    me_data = pd.read_csv(#insert reformatted 23andMe csv path here)
 
     # Merge the two datasets on the rsid column
     merged_data = pd.merge(me_data, gwas_data, on="rsid", how="inner")
@@ -64,9 +66,10 @@ def creatediseaseTrait_Neuro_Brain_Behavior():
     merged_data = merged_data[merged_data["DISEASE/TRAIT"].str.lower().str.contains("brain|behavior|neuro", regex=True)]
 
     # Save the filtered data to a new CSV file
-    # merged_data.to_csv("GWASplus23&ME.csv", index=False)
+    merged_data.to_csv("GWASplus23&ME.csv", index=False)
     print(merged_data["DISEASE/TRAIT"])
 if __name__ == '__main__':
-    # snp_id = input('Enter your SNP ID: ')  # replace with your SNP ID
-    # diseaseTrait_Ancestry(snp_id)
     creatediseaseTrait_Neuro_Brain_Behavior()
+    #rsid is your SNP ID, uncomment the code below to look up ancestry and disease trait associated with rsid
+    snp_id = input('Enter your SNP ID: ')  # replace with your SNP ID
+    diseaseTrait_Ancestry(snp_id)
